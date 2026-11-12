@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>두근두근 발표 주인공 뽑기 (1~17번)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 나눔명조 및 대체 폰트 링크 (함초롱바탕/돋움 미설치 환경 대비 백업) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=Nanum+Gothic:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* 함초롱바탕 및 함초롱돋움을 최우선으로 적용하는 폰트 패밀리 */
+    * {
+      font-family: 'HCR Batang', '함초롱바탕', 'Hamchorong Batang', 'HCR Dotum', '함초롱돋움', 'Hamchorong Dotum', 'Nanum Myeongjo', serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 통통 튀는 애니메이션 */
+    @keyframes jelly {
+      0%, 100% { transform: scale(1, 1); }
+      30% { transform: scale(1.15, 0.85); }
+      40% { transform: scale(0.85, 1.15); }
+      50% { transform: scale(1.08, 0.92); }
+      65% { transform: scale(0.96, 1.04); }
+      75% { transform: scale(1.03, 0.97); }
+    }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    @keyframes shakeSlow {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-5deg); }
+      40% { transform: rotate(5deg); }
+      60% { transform: rotate(-3deg); }
+      80% { transform: rotate(3deg); }
+    }
+
+    @keyframes rattle {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-4px, 3px) rotate(-6deg); }
+      40% { transform: translate(4px, -3px) rotate(6deg); }
+      60% { transform: translate(-3px, -2px) rotate(-4deg); }
+      80% { transform: translate(3px, 2px) rotate(4deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    @keyframes eggWobble {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-12deg) scale(1.05); }
+      75% { transform: rotate(12deg) scale(1.05); }
+    }
+
+    @keyframes rocketShake {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-3px, 2px); }
+      50% { transform: translate(3px, -2px); }
+      75% { transform: translate(-2px, -2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .anim-jelly { animation: jelly 0.8s ease; }
+    .anim-float { animation: floaty 3s ease-in-out infinite; }
+    .anim-shake { animation: shakeSlow 1.5s ease-in-out infinite; }
+    .anim-rattle { animation: rattle 0.25s infinite; }
+    .anim-egg-wobble { animation: eggWobble 0.4s ease-in-out infinite; }
+    .anim-rocket-vibe { animation: rocketShake 0.1s infinite; }
+
+    /* 대형 3D 버튼 스타일 */
+    .btn-3d-yellow {
+      background: linear-gradient(180deg, #FDE047 0%, #EAB308 100%);
+      box-shadow: 0 8px 0 #CA8A04, 0 12px 20px rgba(0,0,0,0.15);
+      transition: all 0.1s ease;
+    }
+    .btn-3d-yellow:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #CA8A04, 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-3d-pink {
+      background: linear-gradient(180deg, #F472B6 0%, #EC4899 100%);
+      box-shadow: 0 6px 0 #BE185D, 0 10px 16px rgba(0,0,0,0.12);
+    }
+    .btn-3d-pink:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #BE185D, 0 3px 6px rgba(0,0,0,0.12);
+    }
+
+    .btn-3d-mint {
+      background: linear-gradient(180deg, #34D399 0%, #059669 100%);
+      box-shadow: 0 6px 0 #047857, 0 10px 16px rgba(0,0,0,0.12);
+    }
+    .btn-3d-mint:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #047857, 0 3px 6px rgba(0,0,0,0.12);
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FEE2E2;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #F87171;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-b from-amber-50 via-sky-50 to-pink-50 min-h-screen text-slate-800 flex flex-col items-center justify-between p-3 sm:p-5 select-none overflow-x-hidden">
+
+  <!-- ================= 상단 헤더 & 컨트롤 바 ================= -->
+  <header class="w-full max-w-5xl flex flex-wrap items-center justify-between gap-3 bg-white/90 backdrop-blur-md px-5 py-3 rounded-3xl shadow-lg border-4 border-amber-200">
+    <!-- 타이틀 -->
+    <div class="flex items-center space-x-3">
+      <span class="text-4xl sm:text-5xl anim-float">🌟</span>
+      <div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-amber-600 tracking-wide drop-shadow-sm flex items-center gap-2">
+          발표 왕을 찾아라!
+          <span class="text-xs sm:text-sm font-normal px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full border border-amber-300">1~17번</span>
+        </h1>
+        <p class="text-sm sm:text-base text-slate-500 font-medium">오늘 멋진 생각을 들려줄 친구는 누구일까요?</p>
+      </div>
+    </div>
+
+    <!-- 우측 도구함: 소리 토글, 중복제외 토글, 초기화 -->
+    <div class="flex items-center flex-wrap gap-2">
+      <!-- 사운드 토글 -->
+      <button id="soundToggleBtn" onclick="toggleSound()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 text-sky-800 text-base font-bold transition shadow-sm">
+        <span id="soundIcon" class="text-xl">🔊</span>
+        <span id="soundText" class="hidden sm:inline">소리 켬</span>
+      </button>
+
+      <!-- 중복 방지 토글 -->
+      <button id="uniqueToggleBtn" onclick="toggleUniqueMode()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-emerald-800 text-base font-bold transition shadow-sm">
+        <span id="uniqueIcon" class="text-xl">✨</span>
+        <span>중복 방지: <strong id="uniqueStatusText" class="text-emerald-700">ON</strong></span>
+      </button>
+
+      <!-- 초기화 버튼 -->
+      <button onclick="confirmReset()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-rose-100 hover:bg-rose-200 border-2 border-rose-300 text-rose-700 text-base font-bold transition shadow-sm">
+        <span class="text-lg">🔄</span>
+        <span class="hidden sm:inline">기록 리셋</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= 모드 선택 탭 (5가지 모드) ================= -->
+  <nav class="w-full max-w-5xl mt-3 flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+    <button onclick="setMode('gift')" id="tab-gift" class="mode-tab flex items-center gap-2 px-4 py-2.5 rounded-2xl border-3 border-pink-400 bg-pink-400 text-white shadow-md text-base sm:text-lg font-bold transition transform scale-105">
+      <span class="text-2xl">🎁</span>
+      <span>선물 상자</span>
+    </button>
+    <button onclick="setMode('wheel')" id="tab-wheel" class="mode-tab flex items-center gap-2 px-4 py-2.5 rounded-2xl border-3 border-amber-300 bg-white text-slate-700 hover:bg-amber-100 shadow-md text-base sm:text-lg font-bold transition">
+      <span class="text-2xl">🎡</span>
+      <span>행운 룰렛</span>
+    </button>
+    <button onclick="setMode('rocket')" id="tab-rocket" class="mode-tab flex items-center gap-2 px-4 py-2.5 rounded-2xl border-3 border-indigo-300 bg-white text-slate-700 hover:bg-indigo-100 shadow-md text-base sm:text-lg font-bold transition">
+      <span class="text-2xl">🚀</span>
+      <span>우주 로켓</span>
+    </button>
+    <button onclick="setMode('egg')" id="tab-egg" class="mode-tab flex items-center gap-2 px-4 py-2.5 rounded-2xl border-3 border-yellow-300 bg-white text-slate-700 hover:bg-yellow-100 shadow-md text-base sm:text-lg font-bold transition">
+      <span class="text-2xl">🐣</span>
+      <span>황금알 깨기</span>
+    </button>
+    <button onclick="setMode('gacha')" id="tab-gacha" class="mode-tab flex items-center gap-2 px-4 py-2.5 rounded-2xl border-3 border-emerald-300 bg-white text-slate-700 hover:bg-emerald-100 shadow-md text-base sm:text-lg font-bold transition">
+      <span class="text-2xl">🎰</span>
+      <span>캡슐 머신</span>
+    </button>
+  </nav>
+
+  <!-- ================= 메인 애니메이션 무대 ================= -->
+  <main class="w-full max-w-4xl flex-1 flex flex-col items-center justify-center my-3 relative min-h-[380px] sm:min-h-[440px]">
+    <div class="w-full h-full bg-white/70 backdrop-blur-sm rounded-3xl border-4 border-amber-200/80 shadow-2xl p-4 sm:p-6 flex flex-col items-center justify-between relative overflow-hidden">
+      
+      <!-- 상태 말풍선 안내 메시지 -->
+      <div id="statusBubble" class="px-5 py-2 bg-amber-100 border-2 border-amber-300 text-amber-900 rounded-full text-base sm:text-xl font-bold shadow-sm flex items-center gap-2 mb-2">
+        <span>👇</span>
+        <span id="statusMessage">아래 커다란 노란 버튼을 눌러보세요!</span>
+        <span>✨</span>
+      </div>
+
+      <!-- 모드별 비주얼 컨테이너 -->
+      <div id="stageArea" class="w-full flex-1 flex items-center justify-center relative min-h-[260px]">
+
+        <!-- 모드 1: 선물 상자 (Gift Box) -->
+        <div id="view-gift" class="mode-view flex flex-col items-center justify-center">
+          <div id="giftBoxContainer" class="relative cursor-pointer transition-transform duration-300 hover:scale-105" onclick="if(!isDrawing) startPick();">
+            <!-- 닫힌 상자 이미지/SVG -->
+            <div id="giftBoxClosed" class="relative w-44 h-44 sm:w-56 sm:h-56">
+              <!-- 선물 박스 몸체 -->
+              <div class="absolute bottom-0 w-full h-36 sm:h-44 bg-gradient-to-tr from-rose-500 to-pink-400 rounded-2xl shadow-xl border-4 border-rose-600 flex items-center justify-center overflow-hidden">
+                <!-- 가로 리본 -->
+                <div class="absolute w-full h-8 sm:h-10 bg-yellow-300 border-y-2 border-yellow-500"></div>
+                <!-- 세로 리본 -->
+                <div class="absolute h-full w-8 sm:w-10 bg-yellow-300 border-x-2 border-yellow-500"></div>
+                <!-- 반짝이 별 데코 -->
+                <span class="absolute top-2 left-3 text-2xl text-yellow-200">★</span>
+                <span class="absolute bottom-2 right-3 text-xl text-yellow-200">✨</span>
+              </div>
+              <!-- 선물 뚜껑 -->
+              <div id="giftLid" class="absolute top-4 sm:top-5 left-1/2 -translate-x-1/2 w-48 sm:w-60 h-12 sm:h-14 bg-gradient-to-r from-rose-600 via-pink-400 to-rose-600 rounded-xl border-4 border-rose-700 shadow-md flex items-center justify-center transition-all duration-500">
+                <div class="h-full w-8 sm:w-10 bg-yellow-300 border-x-2 border-yellow-500"></div>
+              </div>
+              <!-- 선물 리본 매듭 -->
+              <div id="giftBow" class="absolute -top-3 left-1/2 -translate-x-1/2 text-5xl sm:text-6xl drop-shadow-md">
+                🎀
+              </div>
+            </div>
+            <!-- 열린 후 내용물 팝업 -->
+            <div id="giftReveal" class="hidden flex-col items-center justify-center anim-jelly">
+              <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-b from-yellow-300 to-amber-400 border-6 border-white shadow-2xl flex flex-col items-center justify-center">
+                <span class="text-sm sm:text-base font-extrabold text-amber-900">당첨 번호!</span>
+                <span id="giftNumber" class="text-6xl sm:text-7xl font-extrabold text-amber-950">?</span>
+                <span class="text-xs sm:text-sm text-amber-900 font-bold">친구</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 text-pink-700 font-bold text-sm sm:text-base">선물 상자를 톡! 열어보아요</p>
+        </div>
+
+        <!-- 모드 2: 행운의 룰렛 (Lucky Wheel) -->
+        <div id="view-wheel" class="mode-view hidden flex-col items-center justify-center">
+          <div class="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center">
+            <!-- 룰렛 화살표 핀 -->
+            <div class="absolute -top-3 z-20 flex flex-col items-center drop-shadow-lg">
+              <div class="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[28px] border-t-rose-600 filter drop-shadow"></div>
+              <div class="w-4 h-4 bg-yellow-300 rounded-full -mt-2 border-2 border-rose-600"></div>
+            </div>
+
+            <!-- 회전하는 캔버스 -->
+            <canvas id="wheelCanvas" width="340" height="340" class="w-full h-full rounded-full shadow-2xl border-8 border-amber-300 bg-white"></canvas>
+
+            <!-- 룰렛 중심축 -->
+            <div class="absolute w-12 h-12 bg-gradient-to-b from-yellow-300 to-amber-500 rounded-full border-4 border-white shadow-md flex items-center justify-center pointer-events-none">
+              <span class="text-lg">⭐</span>
+            </div>
+          </div>
+          <p class="mt-3 text-amber-800 font-bold text-sm sm:text-base">화살표가 가리키는 번호는 어디일까요?</p>
+        </div>
+
+        <!-- 모드 3: 우주 로켓 발사 (Space Rocket) -->
+        <div id="view-rocket" class="mode-view hidden flex-col items-center justify-center w-full">
+          <div id="rocketStage" class="relative w-full max-w-xs h-64 sm:h-72 bg-gradient-to-b from-indigo-950 via-indigo-900 to-slate-900 rounded-3xl border-4 border-indigo-400 overflow-hidden flex flex-col items-center justify-end p-4 shadow-inner">
+            <!-- 반짝이는 밤하늘 별들 -->
+            <div class="absolute inset-0 pointer-events-none text-xs text-yellow-200 select-none opacity-70">
+              <span class="absolute top-4 left-6">✨</span>
+              <span class="absolute top-10 right-10">⭐</span>
+              <span class="absolute top-24 left-1/3">✦</span>
+              <span class="absolute top-36 right-8">✨</span>
+              <span class="absolute bottom-16 left-8">⭐</span>
+            </div>
+
+            <!-- 카운트다운 숫자 오버레이 -->
+            <div id="rocketCountdown" class="hidden absolute top-12 text-6xl sm:text-7xl font-extrabold text-yellow-300 drop-shadow-[0_4px_12px_rgba(253,224,71,0.6)] anim-jelly">
+              3
+            </div>
+
+            <!-- 우주선 본체 -->
+            <div id="rocketBody" class="relative z-10 flex flex-col items-center transition-all duration-700 ease-in">
+              <div class="text-6xl sm:text-7xl drop-shadow-lg transform -rotate-45">
+                🚀
+              </div>
+              <!-- 불꽃 이펙트 -->
+              <div id="rocketFire" class="hidden text-3xl -mt-2 animate-bounce">
+                🔥
+              </div>
+            </div>
+
+            <!-- 낙하산 착륙 (발표 번호 탑승) -->
+            <div id="rocketParachute" class="hidden absolute top-6 z-20 flex-col items-center anim-jelly">
+              <div class="text-5xl sm:text-6xl">🪂</div>
+              <div class="bg-yellow-300 border-3 border-amber-600 px-4 py-1.5 rounded-2xl shadow-lg -mt-2 flex flex-col items-center">
+                <span class="text-xs font-bold text-amber-900">우주인 번호</span>
+                <span id="rocketNumber" class="text-4xl sm:text-5xl font-extrabold text-indigo-950">?</span>
+              </div>
+            </div>
+
+            <!-- 발사대 바닥 잔디/패드 -->
+            <div class="w-full h-8 bg-slate-700 border-t-4 border-indigo-400 rounded-b-xl flex items-center justify-around text-xs text-slate-300">
+              <span>●</span><span>●</span><span>LAUNCH PAD</span><span>●</span><span>●</span>
+            </div>
+          </div>
+          <p class="mt-3 text-indigo-900 font-bold text-sm sm:text-base">3... 2... 1... 우주로 슝!</p>
+        </div>
+
+        <!-- 모드 4: 황금 알 깨기 (Golden Egg) -->
+        <div id="view-egg" class="mode-view hidden flex-col items-center justify-center">
+          <div id="eggContainer" class="relative cursor-pointer" onclick="if(!isDrawing) startPick();">
+            <!-- 온전한 / 금 간 황금알 -->
+            <div id="eggGraphic" class="relative w-44 h-56 sm:w-52 sm:h-64 rounded-[50%_50%_50%_50%/60%_60%_40%_40%] bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-200 border-6 border-amber-500 shadow-2xl flex items-center justify-center overflow-hidden">
+              <!-- 반짝임 하이라이트 -->
+              <div class="absolute top-6 left-8 w-10 h-16 bg-white/60 rounded-full transform -rotate-30 filter blur-[1px]"></div>
+              <!-- 깨짐 선 오버레이 -->
+              <svg id="eggCracks" class="hidden absolute inset-0 w-full h-full pointer-events-none stroke-amber-800" viewBox="0 0 100 100" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 50 10 L 45 35 L 58 45 L 42 60 L 55 75 L 48 95" />
+                <path d="M 45 35 L 30 40 L 20 32" />
+                <path d="M 58 45 L 75 42 L 85 55" />
+              </svg>
+              <span id="eggSparkleText" class="text-3xl text-yellow-600 font-bold select-none">✨황금알✨</span>
+            </div>
+
+            <!-- 깨져서 나온 아기 병아리 번호판 -->
+            <div id="eggBabyChick" class="hidden flex-col items-center justify-center anim-jelly">
+              <div class="text-6xl sm:text-7xl anim-float">🐣</div>
+              <div class="bg-amber-100 border-4 border-amber-400 px-5 py-2 rounded-2xl shadow-xl -mt-2 flex flex-col items-center">
+                <span class="text-xs sm:text-sm font-bold text-amber-800">삐약! 주인공은</span>
+                <span id="eggNumber" class="text-5xl sm:text-6xl font-black text-amber-900">?</span>
+                <span class="text-xs font-bold text-amber-700">번 친구!</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 text-amber-700 font-bold text-sm sm:text-base">톡톡! 알 속에서 누가 나올까요?</p>
+        </div>
+
+        <!-- 모드 5: 알록달록 캡슐 머신 (Gashapon Capsule Machine) -->
+        <div id="view-gacha" class="mode-view hidden flex-col items-center justify-center">
+          <div class="relative w-52 h-72 sm:w-60 sm:h-80 flex flex-col items-center">
+            <!-- 투명 구체 돔 (캡슐 보관함) -->
+            <div id="gachaDome" class="relative w-48 h-48 sm:w-56 sm:h-56 bg-sky-100/50 rounded-full border-4 border-sky-300 shadow-xl overflow-hidden flex items-center justify-center">
+              <!-- 내부 굴러다니는 알록달록 공들 -->
+              <div id="gachaBallsContainer" class="w-full h-full relative">
+                <!-- Javascript에서 볼들을 렌더링 -->
+              </div>
+              <!-- 하이라이트 반사광 -->
+              <div class="absolute top-2 left-6 w-12 h-6 bg-white/70 rounded-full transform -rotate-45"></div>
+            </div>
+
+            <!-- 하단 머신 몸체 & 손잡이 -->
+            <div class="w-44 sm:w-52 h-24 sm:h-28 bg-gradient-to-b from-rose-400 to-rose-600 rounded-b-3xl border-4 border-rose-700 shadow-lg relative -mt-4 flex flex-col items-center justify-center z-10">
+              <!-- 손잡이 다이얼 -->
+              <div id="gachaCrank" class="w-12 h-12 bg-amber-300 rounded-full border-3 border-amber-600 shadow flex items-center justify-center cursor-pointer transition-transform duration-500 hover:scale-110" onclick="if(!isDrawing) startPick();">
+                <div class="w-8 h-2.5 bg-amber-600 rounded-full"></div>
+              </div>
+              <span class="text-[11px] text-white font-bold mt-1">돌려서 뽑기!</span>
+              <!-- 배출구 -->
+              <div class="w-16 h-4 bg-rose-950 rounded-full border border-rose-800 mt-1"></div>
+            </div>
+
+            <!-- 굴러떨어진 캡슐 번호 알림 -->
+            <div id="gachaDroppedCapsule" class="hidden absolute -bottom-4 z-20 flex-col items-center anim-jelly">
+              <div id="droppedBall" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white shadow-2xl flex items-center justify-center text-white text-3xl sm:text-4xl font-black bg-pink-500">
+                <span id="gachaNumber">?</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 text-rose-700 font-bold text-sm sm:text-base">손잡이를 돌려 캡슐을 꺼내요!</p>
+        </div>
+
+      </div>
+
+      <!-- ================= 초대형 뽑기 시작 버튼 ================= -->
+      <div class="w-full flex flex-col items-center justify-center pt-2 px-2">
+        <button id="drawActionBtn" onclick="startPick()" class="btn-3d-yellow w-full max-w-xl py-4 sm:py-5 px-6 sm:px-10 rounded-3xl text-2xl sm:text-3xl lg:text-4xl font-black text-amber-950 tracking-wider flex items-center justify-center gap-2 sm:gap-3 cursor-pointer whitespace-nowrap overflow-hidden">
+          <span class="text-2xl sm:text-3xl lg:text-4xl flex-shrink-0">🎲</span>
+          <span id="btnText" class="whitespace-nowrap font-extrabold tracking-normal">두근두근 번호 뽑기!</span>
+          <span class="text-2xl sm:text-3xl lg:text-4xl flex-shrink-0">✨</span>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= 하단: 1~17번 학생 출석 현황판 & 뽑힌 기록 ================= -->
+  <footer class="w-full max-w-5xl bg-white/80 backdrop-blur-sm rounded-3xl p-4 sm:p-5 border-3 border-amber-200 shadow-md">
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🎒</span>
+        <h2 class="text-base sm:text-lg font-bold text-slate-700">1학년 친구들 현황판 (남은 친구: <span id="remainCount" class="text-emerald-600 font-black">17</span>명)</h2>
+      </div>
+      <span class="text-xs text-slate-400 font-medium">* 클릭해서 수동으로 완료/대기 전환 가능</span>
+    </div>
+
+    <!-- 1번~17번 번호 뱃지 격자 -->
+    <div id="studentBadgeGrid" class="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-17 gap-1.5 sm:gap-2">
+      <!-- JS로 1~17번 배지 자동 생성 -->
+    </div>
+
+    <!-- 최근 뽑힌 순서 히스토리 타임라인 -->
+    <div class="mt-3 pt-2.5 border-t border-slate-200/80 flex items-center gap-2 overflow-x-auto text-sm">
+      <span class="text-xs font-bold text-slate-500 whitespace-nowrap">발표 순서:</span>
+      <div id="historyList" class="flex items-center gap-1.5 flex-nowrap overflow-x-auto py-1">
+        <span class="text-xs text-slate-400">아직 뽑힌 친구가 없어요!</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= 축하 대형 모달 (팝업) ================= -->
+  <div id="celebrationModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-gradient-to-b from-yellow-50 via-white to-pink-50 border-6 border-amber-400 rounded-3xl max-w-lg w-full p-6 sm:p-8 flex flex-col items-center text-center shadow-2xl relative anim-jelly">
+      <!-- 닫기 X 버튼 -->
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-3xl text-slate-400 hover:text-slate-600">&times;</button>
+      
+      <div class="text-5xl sm:text-6xl mb-2 anim-float">🎉👏🥳</div>
+      <h3 class="text-2xl sm:text-3xl font-black text-amber-600 mb-1">와아! 찾았다!</h3>
+      <p class="text-base sm:text-lg text-slate-600 font-bold mb-4">오늘의 멋진 발표 주인공!</p>
+
+      <!-- 당첨 번호 대형 원형 박스 -->
+      <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 border-8 border-white shadow-2xl flex flex-col items-center justify-center mb-4 transform scale-110">
+        <span class="text-sm sm:text-base font-extrabold text-amber-900">축하합니다!</span>
+        <span id="modalWinnerNumber" class="text-6xl sm:text-7xl font-black text-amber-950 tracking-tighter">12</span>
+        <span class="text-sm font-extrabold text-amber-900">번 어린이</span>
+      </div>
+
+      <p id="modalCheerMsg" class="text-lg sm:text-xl font-black text-pink-600 mb-6">"씩씩하고 멋진 목소리로 들려주세요! 🎤"</p>
+
+      <!-- 확인 버튼 -->
+      <button onclick="closeModal()" class="btn-3d-mint w-full py-3.5 px-6 rounded-2xl text-xl sm:text-2xl font-black text-white shadow-lg tracking-wide">
+        멋지게 발표 시작하기! 🌟
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= 사운드 및 스크립트 로직 ================= -->
+  <script>
+    /* =====================================================================
+       1. 전역 상태 및 사운드 시스템 (Web Audio API - 외부 음원 불필요)
+       ===================================================================== */
+    const TOTAL_STUDENTS = 17;
+    let pickedHistory = [];
+    let isDrawing = false;
+    let currentMode = 'gift'; // 'gift', 'wheel', 'rocket', 'egg', 'gacha'
+    let soundEnabled = true;
+    let uniqueMode = true; // 이미 뽑힌 번호 제외 옵션
+
+    // Web Audio Synthesizer
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, type = 'sine', duration = 0.15, vol = 0.2) {
+      if (!soundEnabled) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // 통통 튀는 클릭음
+    function playPopSound() {
+      playTone(520, 'triangle', 0.12, 0.25);
+    }
+
+    // 룰렛 회전 틱틱 소리
+    function playTickSound() {
+      playTone(850, 'sine', 0.04, 0.15);
+    }
+
+    // 카운트다운 비프음
+    function playBeep(freq = 440) {
+      playTone(freq, 'square', 0.18, 0.18);
+    }
+
+    // 승리 팡파레 멜로디
+    function playFanfare() {
+      if (!soundEnabled) return;
+      const notes = [
+        { f: 523.25, d: 0.12 }, // C5
+        { f: 659.25, d: 0.12 }, // E5
+        { f: 783.99, d: 0.12 }, // G5
+        { f: 1046.50, d: 0.35 } // C6
+      ];
+      notes.forEach((n, i) => {
+        setTimeout(() => {
+          playTone(n.f, 'triangle', n.d, 0.3);
+        }, i * 130);
+      });
+    }
+
+    // 알 깨지는 바삭 소리 시뮬레이션
+    function playCrackSound() {
+      if (!soundEnabled) return;
+      playTone(300, 'sawtooth', 0.08, 0.15);
+      setTimeout(() => playTone(180, 'sawtooth', 0.08, 0.15), 50);
+    }
+
+    /* =====================================================================
+       2. 초기화 및 UI 바인딩
+       ===================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      buildStudentGrid();
+      initWheel();
+      initGachaBalls();
+      setMode('gift');
+      updateStatusDisplay();
+    });
+
+    // 소리 켜기/끄기 토글
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      const text = document.getElementById('soundText');
+      if (soundEnabled) {
+        icon.textContent = '🔊';
+        text.textContent = '소리 켬';
+        playPopSound();
+      } else {
+        icon.textContent = '🔇';
+        text.textContent = '소리 끔';
+      }
+    }
+
+    // 중복 뽑기 방지 ON/OFF
+    function toggleUniqueMode() {
+      uniqueMode = !uniqueMode;
+      const statusText = document.getElementById('uniqueStatusText');
+      const btn = document.getElementById('uniqueToggleBtn');
+      if (uniqueMode) {
+        statusText.textContent = 'ON';
+        statusText.className = 'text-emerald-700';
+        btn.className = 'flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-emerald-800 text-base font-bold transition shadow-sm';
+      } else {
+        statusText.textContent = 'OFF';
+        statusText.className = 'text-amber-800';
+        btn.className = 'flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-800 text-base font-bold transition shadow-sm';
+      }
+      playPopSound();
+      drawWheel();
+      updateStatusDisplay();
+    }
+
+    // 1~17번 학생 배지 그리드 렌더링
+    function buildStudentGrid() {
+      const grid = document.getElementById('studentBadgeGrid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= TOTAL_STUDENTS; i++) {
+        const isPicked = pickedHistory.includes(i);
+        const badge = document.createElement('button');
+        badge.id = `badge-${i}`;
+        badge.onclick = () => toggleManualStudent(i);
+        badge.className = `flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-2xl font-black text-base sm:text-lg border-2 transition-transform transform active:scale-90 ${
+          isPicked
+            ? 'bg-slate-200 text-slate-400 border-slate-300 opacity-60 line-through'
+            : 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200 shadow-sm'
+        }`;
+        badge.innerHTML = `
+          <span class="text-xs opacity-75">${i <= 9 ? '0' + i : i}</span>
+          <span class="text-lg sm:text-xl -mt-1">${i}</span>
+        `;
+        grid.appendChild(badge);
+      }
+      updateRemainCounter();
+      renderHistoryList();
+    }
+
+    // 수동으로 특정 번호 토글 (결석이나 이미 한 친구 체크용)
+    function toggleManualStudent(num) {
+      if (isDrawing) return;
+      playPopSound();
+      if (pickedHistory.includes(num)) {
+        pickedHistory = pickedHistory.filter(n => n !== num);
+      } else {
+        pickedHistory.push(num);
+      }
+      buildStudentGrid();
+      drawWheel();
+      updateStatusDisplay();
+    }
+
+    // 남은 학생 카운터 갱신
+    function updateRemainCounter() {
+      const available = getAvailableCandidates();
+      document.getElementById('remainCount').textContent = available.length;
+    }
+
+    // 뽑기 기록 목록 갱신
+    function renderHistoryList() {
+      const container = document.getElementById('historyList');
+      if (pickedHistory.length === 0) {
+        container.innerHTML = '<span class="text-xs text-slate-400">아직 뽑힌 친구가 없어요!</span>';
+        return;
+      }
+      container.innerHTML = '';
+      pickedHistory.forEach((num, idx) => {
+        const pill = document.createElement('span');
+        pill.className = 'px-2.5 py-1 bg-amber-400 text-amber-950 font-black rounded-full text-xs shadow-sm flex items-center gap-1 flex-shrink-0';
+        pill.innerHTML = `<span>${idx + 1}등:</span> <strong>${num}번</strong>`;
+        container.appendChild(pill);
+      });
+    }
+
+    // 기록 초기화
+    function confirmReset() {
+      if (pickedHistory.length === 0) {
+        showStatus('초기화할 기록이 없어요!', '😊');
+        return;
+      }
+      pickedHistory = [];
+      buildStudentGrid();
+      drawWheel();
+      playPopSound();
+      showStatus('기록을 모두 깨끗하게 비웠어요! 다시 시작해요 ✨', '🔄');
+    }
+
+    // 사용 가능한 후보 번호 목록 구하기
+    function getAvailableCandidates() {
+      const all = Array.from({ length: TOTAL_STUDENTS }, (_, i) => i + 1);
+      if (!uniqueMode) return all;
+      const left = all.filter(num => !pickedHistory.includes(num));
+      return left.length > 0 ? left : all; // 다 뽑혔으면 자동으로 전체 대상
+    }
+
+    // 상태 메시지 표시
+    function showStatus(msg, emoji = '💡') {
+      const bubble = document.getElementById('statusMessage');
+      bubble.textContent = msg;
+    }
+
+    function updateStatusDisplay() {
+      const left = getAvailableCandidates();
+      if (uniqueMode && pickedHistory.length >= TOTAL_STUDENTS) {
+        showStatus('모든 친구들이 1번씩 다 발표했어요! 멋져요 👏', '👑');
+      } else {
+        showStatus(`지금 ${left.length}명의 친구가 두근두근 기다리고 있어요!`, '👀');
+      }
+    }
+
+    /* =====================================================================
+       3. 모드 전환 로직
+       ===================================================================== */
+    function setMode(mode) {
+      if (isDrawing) return;
+      playPopSound();
+      currentMode = mode;
+
+      // 탭 스타일 갱신
+      document.querySelectorAll('.mode-tab').forEach(tab => {
+        tab.classList.remove('bg-pink-400', 'bg-amber-400', 'bg-indigo-500', 'bg-yellow-400', 'bg-emerald-500', 'text-white', 'scale-105');
+        tab.classList.add('bg-white', 'text-slate-700');
+      });
+
+      const activeTab = document.getElementById(`tab-${mode}`);
+      if (activeTab) {
+        activeTab.classList.remove('bg-white', 'text-slate-700');
+        activeTab.classList.add('text-white', 'scale-105');
+        if (mode === 'gift') activeTab.classList.add('bg-pink-400');
+        if (mode === 'wheel') activeTab.classList.add('bg-amber-400');
+        if (mode === 'rocket') activeTab.classList.add('bg-indigo-500');
+        if (mode === 'egg') activeTab.classList.add('bg-yellow-400');
+        if (mode === 'gacha') activeTab.classList.add('bg-emerald-500');
+      }
+
+      // 모드별 뷰 렌더링
+      document.querySelectorAll('.mode-view').forEach(view => view.classList.add('hidden'));
+      const activeView = document.getElementById(`view-${mode}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      // 각 모드 리셋
+      resetStageElements();
+
+      if (mode === 'wheel') {
+        drawWheel();
+      }
+    }
+
+    function resetStageElements() {
+      // 선물 상자 초기화
+      document.getElementById('giftBoxClosed').classList.remove('hidden', 'anim-rattle');
+      document.getElementById('giftLid').style.transform = 'translate(-50%, 0)';
+      document.getElementById('giftReveal').classList.add('hidden');
+
+      // 로켓 초기화
+      const rocket = document.getElementById('rocketBody');
+      rocket.style.transform = 'translateY(0)';
+      document.getElementById('rocketFire').classList.add('hidden');
+      document.getElementById('rocketCountdown').classList.add('hidden');
+      document.getElementById('rocketParachute').classList.add('hidden');
+
+      // 황금알 초기화
+      document.getElementById('eggGraphic').classList.remove('hidden', 'anim-egg-wobble');
+      document.getElementById('eggCracks').classList.add('hidden');
+      document.getElementById('eggBabyChick').classList.add('hidden');
+
+      // 캡슐 머신 초기화
+      document.getElementById('gachaDroppedCapsule').classList.add('hidden');
+      document.getElementById('gachaCrank').style.transform = 'rotate(0deg)';
+    }
+
+    /* =====================================================================
+       4. 번호 뽑기 메인 디스패처 (5가지 모드 실행)
+       ===================================================================== */
+    function startPick() {
+      if (isDrawing) return;
+
+      const candidates = getAvailableCandidates();
+      if (candidates.length === 0) {
+        showStatus('모든 친구가 발표를 마쳤어요! 리셋 후 다시 해볼까요?', '🥳');
+        return;
+      }
+
+      // 무작위 1명 선택
+      const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+      isDrawing = true;
+      document.getElementById('drawActionBtn').disabled = true;
+      document.getElementById('drawActionBtn').classList.add('opacity-70', 'cursor-not-allowed');
+
+      if (currentMode === 'gift') {
+        runGiftMode(chosen);
+      } else if (currentMode === 'wheel') {
+        runWheelMode(chosen);
+      } else if (currentMode === 'rocket') {
+        runRocketMode(chosen);
+      } else if (currentMode === 'egg') {
+        runEggMode(chosen);
+      } else if (currentMode === 'gacha') {
+        runGachaMode(chosen);
+      }
+    }
+
+    /* Mode 1: 선물 상자 열기 */
+    function runGiftMode(winnerNum) {
+      showStatus('상자가 달달달 흔들리고 있어요! 무엇이 나올까?', '🎁');
+      resetStageElements();
+      const giftClosed = document.getElementById('giftBoxClosed');
+      giftClosed.classList.add('anim-rattle');
+
+      let rattleCount = 0;
+      const rattleInterval = setInterval(() => {
+        playPopSound();
+        rattleCount++;
+        if (rattleCount > 10) {
+          clearInterval(rattleInterval);
+          giftClosed.classList.remove('anim-rattle');
+          // 상자 뚜껑 열림
+          const lid = document.getElementById('giftLid');
+          lid.style.transform = 'translate(-50%, -60px) rotate(-15deg)';
+          playTone(660, 'sine', 0.2, 0.3);
+
+          setTimeout(() => {
+            giftClosed.classList.add('hidden');
+            const reveal = document.getElementById('giftReveal');
+            document.getElementById('giftNumber').textContent = winnerNum;
+            reveal.classList.remove('hidden');
+            finalizeWinner(winnerNum);
+          }, 350);
+        }
+      }, 140);
+    }
+
+    /* Mode 2: 행운의 룰렛 */
+    let wheelAngle = 0;
+    const wheelColors = [
+      '#F87171', '#FB923C', '#FBBF24', '#34D399',
+      '#60A5FA', '#818CF8', '#A78BFA', '#F472B6',
+      '#4ADE80', '#38BDF8', '#F43F5E', '#F59E0B'
+    ];
+
+    function initWheel() {
+      drawWheel();
+    }
+
+    function drawWheel() {
+      const canvas = document.getElementById('wheelCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const candidates = getAvailableCandidates();
+      const count = candidates.length;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = centerX - 10;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const arc = (2 * Math.PI) / count;
+
+      for (let i = 0; i < count; i++) {
+        const angle = wheelAngle + i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = wheelColors[i % wheelColors.length];
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, angle, angle + arc);
+        ctx.lineTo(centerX, centerY);
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        // 번호 텍스트 그리기
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 22px "HCR Batang", "함초롱바탕", "HCR Dotum", "함초롱돋움", serif';
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.shadowBlur = 4;
+        ctx.fillText(`${candidates[i]}번`, radius - 20, 8);
+        ctx.restore();
+      }
+    }
+
+    function runWheelMode(winnerNum) {
+      showStatus('빙글빙글 룰렛이 신나게 돌아갑니다!', '🎡');
+      const candidates = getAvailableCandidates();
+      const count = candidates.length;
+      const winnerIndex = candidates.indexOf(winnerNum);
+      const arc = (2 * Math.PI) / count;
+
+      // 룰렛 화살표는 12시 방향 (-PI / 2)에 위치
+      // 타겟 각도: 회전 후 winnerIndex의 중앙이 12시(-PI/2)에 멈추도록 계산
+      const targetSectorAngle = -Math.PI / 2 - (winnerIndex * arc + arc / 2);
+      const fullRotations = (5 + Math.floor(Math.random() * 3)) * (2 * Math.PI); // 5~7바퀴 회전
+      const totalSpin = fullRotations + (targetSectorAngle - (wheelAngle % (2 * Math.PI)));
+
+      const duration = 4000;
+      const start = performance.now();
+      const initialAngle = wheelAngle;
+
+      let lastTickAngle = wheelAngle;
+
+      function animateWheel(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // 부드러운 감속 (ease-out-cubic)
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        wheelAngle = initialAngle + totalSpin * easeOut;
+        drawWheel();
+
+        // 룰렛이 칸을 지날 때마다 틱틱 소리
+        if (Math.abs(wheelAngle - lastTickAngle) > arc) {
+          playTickSound();
+          lastTickAngle = wheelAngle;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(animateWheel);
+        } else {
+          finalizeWinner(winnerNum);
+        }
+      }
+      requestAnimationFrame(animateWheel);
+    }
+
+    /* Mode 3: 우주 로켓 발사 */
+    function runRocketMode(winnerNum) {
+      resetStageElements();
+      const countOverlay = document.getElementById('rocketCountdown');
+      const rocket = document.getElementById('rocketBody');
+      const fire = document.getElementById('rocketFire');
+      countOverlay.classList.remove('hidden');
+
+      let countdown = 3;
+      countOverlay.textContent = countdown;
+      playBeep(440);
+      showStatus(`카운트다운 시작! ${countdown}...`, '🚀');
+
+      const cdInterval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+          countOverlay.textContent = countdown;
+          playBeep(440 + (3 - countdown) * 110);
+          showStatus(`발사 준비! ${countdown}...`, '🚀');
+        } else {
+          clearInterval(cdInterval);
+          countOverlay.classList.add('hidden');
+          showStatus('우주로 발사! 슝~~~~~', '✨');
+          playTone(880, 'sawtooth', 0.5, 0.3);
+
+          // 불꽃 뿜으며 로켓 발사 애니메이션
+          fire.classList.remove('hidden');
+          rocket.classList.add('anim-rocket-vibe');
+          rocket.style.transition = 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+          rocket.style.transform = 'translateY(-280px) scale(0.6)';
+
+          setTimeout(() => {
+            rocket.classList.remove('anim-rocket-vibe');
+            // 번호를 담은 낙하산 도착
+            const parachute = document.getElementById('rocketParachute');
+            document.getElementById('rocketNumber').textContent = winnerNum;
+            parachute.classList.remove('hidden');
+            finalizeWinner(winnerNum);
+          }, 1300);
+        }
+      }, 800);
+    }
+
+    /* Mode 4: 황금 알 깨기 */
+    function runEggMode(winnerNum) {
+      resetStageElements();
+      showStatus('황금알이 부들부들 흔들려요! 톡톡톡!', '🐣');
+      const egg = document.getElementById('eggGraphic');
+      const cracks = document.getElementById('eggCracks');
+      egg.classList.add('anim-egg-wobble');
+
+      let taps = 0;
+      const eggInterval = setInterval(() => {
+        taps++;
+        playCrackSound();
+        if (taps === 4) {
+          // 금 가기 시작
+          cracks.classList.remove('hidden');
+        }
+        if (taps > 8) {
+          clearInterval(eggInterval);
+          egg.classList.add('hidden');
+          const chick = document.getElementById('eggBabyChick');
+          document.getElementById('eggNumber').textContent = winnerNum;
+          chick.classList.remove('hidden');
+          finalizeWinner(winnerNum);
+        }
+      }, 240);
+    }
+
+    /* Mode 5: 알록달록 캡슐 머신 */
+    function initGachaBalls() {
+      const container = document.getElementById('gachaBallsContainer');
+      container.innerHTML = '';
+      const colors = ['bg-rose-400', 'bg-amber-400', 'bg-emerald-400', 'bg-sky-400', 'bg-purple-400', 'bg-pink-400'];
+      
+      // 10개의 귀여운 장식 캡슐 배치
+      for (let i = 0; i < 10; i++) {
+        const ball = document.createElement('div');
+        const col = colors[i % colors.length];
+        const left = 15 + Math.random() * 65;
+        const top = 20 + Math.random() * 60;
+        ball.className = `absolute w-9 h-9 rounded-full ${col} border-2 border-white shadow-md flex items-center justify-center opacity-90 transition-all duration-300`;
+        ball.style.left = `${left}%`;
+        ball.style.top = `${top}%`;
+        ball.innerHTML = '<span class="text-[10px] text-white">⭐</span>';
+        container.appendChild(ball);
+      }
+    }
+
+    function runGachaMode(winnerNum) {
+      resetStageElements();
+      showStatus('드르륵! 캡슐 머신을 돌려요!', '🎰');
+      const crank = document.getElementById('gachaCrank');
+      crank.style.transform = 'rotate(720deg)';
+
+      let spinTicks = 0;
+      const crankInterval = setInterval(() => {
+        playTickSound();
+        spinTicks++;
+        // 캡슐 볼들이 섞이는 애니메이션
+        const balls = document.querySelectorAll('#gachaBallsContainer > div');
+        balls.forEach(b => {
+          b.style.transform = `translate(${Math.random() * 14 - 7}px, ${Math.random() * 14 - 7}px)`;
+        });
+        if (spinTicks > 7) {
+          clearInterval(crankInterval);
+          // 캡슐 톡 떨어짐
+          const dropped = document.getElementById('gachaDroppedCapsule');
+          document.getElementById('gachaNumber').textContent = winnerNum;
+          dropped.classList.remove('hidden');
+          playPopSound();
+          finalizeWinner(winnerNum);
+        }
+      }, 180);
+    }
+
+    /* =====================================================================
+       5. 결과 발표 & 축하 연출 & 기록 반영
+       ===================================================================== */
+    const cheerMessages = [
+      "씩씩하고 또박또박 멋진 발표를 기대해요! 🎤",
+      "반 친구들 모두 귀를 쫑긋 세우고 응원해요! 👏",
+      "와아! 우리 반의 멋진 주인공이 탄생했어요! 🌟",
+      "자신감 있게 방긋 웃으며 이야기해볼까요? 😊",
+      "오늘의 최고 이야기꾼! 짝짝짝! 💖"
+    ];
+
+    function finalizeWinner(winnerNum) {
+      playFanfare();
+
+      // 화려한 컨페티 폭죽 팡팡
+      fireConfetti();
+
+      // 기록 업데이트
+      if (!pickedHistory.includes(winnerNum)) {
+        pickedHistory.push(winnerNum);
+      }
+      buildStudentGrid();
+      updateStatusDisplay();
+
+      // 0.6초 뒤에 대형 축하 모달 오픈
+      setTimeout(() => {
+        openModal(winnerNum);
+        isDrawing = false;
+        const btn = document.getElementById('drawActionBtn');
+        btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+      }, 600);
+    }
+
+    function openModal(winnerNum) {
+      document.getElementById('modalWinnerNumber').textContent = winnerNum;
+      const randomMsg = cheerMessages[Math.floor(Math.random() * cheerMessages.length)];
+      document.getElementById('modalCheerMsg').textContent = `"${randomMsg}"`;
+      const modal = document.getElementById('celebrationModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      playPopSound();
+      const modal = document.getElementById('celebrationModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // 색종이 가루 폭죽 (Canvas-confetti)
+    function fireConfetti() {
+      if (typeof confetti !== 'function') return;
+      confetti({
+        particleCount: 70,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#FF76CE']
+      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#FDE047', '#EC4899', '#38BDF8']
+        });
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#FDE047', '#EC4899', '#38BDF8']
+        });
+      }, 250);
+    }
+  </script>
+</body>
+</html>
